@@ -72,14 +72,14 @@ class Contenedor {
 }
 
 let productos = new Contenedor("productos.txt");
-// productos.save(
-//   {
-//     title: "Mochila",
-//     price: 456.78,
-//     thumbnail:
-//     "https://cdn3.iconfinder.com/data/icons/education-209/64/globe-earth-geograhy-planet-school-256.png",
-//   }
-// );
+productos.save(
+  {
+    title: "Mochila",
+    price: 456.78,
+    thumbnail:
+    "https://cdn3.iconfinder.com/data/icons/spring-2-1/30/Backpack-512.png/",
+  }
+);
 
 // productos.getById(3)
 
