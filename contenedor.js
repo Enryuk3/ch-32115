@@ -1,8 +1,8 @@
 // Implementar programa que contenga una clase llamada Contenedor que reciba el nombre del archivo con el que va a trabajar e implementarse los siguientes métodos
 
-const fs = require("fs").promises;
+import fs from 'fs/promises';
 
-class Contenedor {
+export default class Contenedor {
   constructor(nombreArchivo) {
     this.nombreArchivo = nombreArchivo;
   }
@@ -34,7 +34,7 @@ class Contenedor {
       const info = await fs.readFile(this.nombreArchivo, "utf-8");
       const contenido = JSON.parse(info);
       const producto = contenido.find((objeto) => objeto.id === id);
-      producto ? console.log(producto) : console.log("null");
+      return producto ? producto : "null";
     } catch (error) {
       console.log(error);
     }
@@ -44,7 +44,6 @@ class Contenedor {
     try {
       const info = await fs.readFile(this.nombreArchivo, "utf-8");
       const contenido = JSON.parse(info);
-      console.log(contenido);
       return contenido;
     } catch (error) {
       throw new Error(error);
@@ -71,7 +70,7 @@ class Contenedor {
   }
 }
 
-let productos = new Contenedor("productos.txt");
+// let productos = new Contenedor("productos.txt");
 
 /* productos.save(
   {
@@ -82,9 +81,9 @@ let productos = new Contenedor("productos.txt");
   }
 ); */
 
-// productos.getById(3)
+// console.log(productos.getById(3))
 
-// productos.getAll();
+// console.log(productos.getAll());
 
 // productos.deleteById(4);
 
