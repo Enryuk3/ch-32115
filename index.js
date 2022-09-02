@@ -1,34 +1,29 @@
-class Usuario {
-  constructor(nombre, apellido, libros, mascotas) {
-    this.nombre = nombre;
-    this.apellido = apellido;
-    this.libros = libros;
-    this.mascotas = mascotas;
-  }
-  getFullName() {
-    return `${this.nombre} ${this.apellido}`;
-  }
-  addMascotas(mascota){
-    this.mascotas.push(mascota);
-  }
-  countMascotas(){
-    return `El número de mascotas es ${this.mascotas.length}`;
-  }
-  addBook(nombre, autor) {
-    this.libros.push({
-      nombre,
-      autor
-    });
-  }
-  getBookNames() {
-    return this.libros.map(libro => libro.nombre);
-  }
-}
+import Contenedor from "./contenedor.js";
+import express from "express";
 
-const usuario1 = new Usuario('Juan', 'Perez', [{nombre: 'El señor de los anillos', autor: 'J.R.R.Tolkien'},{nombre: 'El corazón de la piedra', autor: 'José María García López' }], ["Perro", "Gato", "Conejo"]);
+const contenedor = new Contenedor("productos.txt");
+const app = express();
 
-console.log(usuario1.getFullName());
-usuario1.addMascotas("Pajarito");
-console.log(usuario1.countMascotas());
-usuario1.addBook("El Canto Gregoriano", "Juan Carlos Ascencio");
-console.log(usuario1.getBookNames());
+app.get("/productos",async (req, res) => {
+  const productos = await contenedor.getAll();
+  res.json(productos);
+
+  // contenedor.getAll().then((data) => res.json(data));
+});
+
+app.get('/productoRandom', async(req, res) => {
+  const random = Math.floor(Math.random() * 3) + 1;
+  const producto = await contenedor.getById(random)
+  res.json(producto);
+
+  // contenedor.getAll().then((data) => {
+  //   const random = Math.floor(Math.random() * data.length);
+  //   res.json(data[random]);
+  // });
+})
+
+const PORT = 8080;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+// server.on('error', error => console.log(`Server error: ${error}`))
