@@ -1,55 +1,77 @@
-const fs = require('fs');
+const fs = require("fs");
 
-const productsArray = [];
+let productsArray = [];
 
-const products = JSON.parse(fs.readFileSync('src/productos.json', 'utf-8'));
-
-const getAll = (req, res) => {
-  res.send(products);
+const readProductFile = async () => {
+  try {
+    const productFile = await fs.promises.readFile(
+      "src/productos.json",
+      "utf-8"
+    );
+    productsArray = JSON.parse(productFile);
+  } catch (error) {
+    console.log(error);
+  }
+};
+const getAll = async(req, res) => {
+  await readProductFile();
+  res.send(productsArray);
 };
 
-const findProduct = (req, res) => {
+const findProduct = async(req, res) => {
   const { id } = req.params;
-  console.log(products);
-
-  const findProduct = products.find((num) => {
-    return (num.id = id);
-  });
-  console.log(findProduct);
-  res.send(findProduct);
+  await readProductFile();
+  try {
+    const findProduct = productsArray.find((product) => product.id == id);
+    if (!findProduct) {
+      res.send({ error: "producto no encontrado" });
+    } else{
+      res.send(findProduct);
+    }
+  } catch (error) {
+    res.status(400).json(error);
+  }
 };
 
 const deleteAll = (req, res) => {
-  products = [];
-  res.send(products);
+  productsArray = [];
+  res.send(productsArray);
 };
 
-const deleteById = (req, res) => {
+const deleteById = async (req, res) => {
   const { id } = req.params;
-
-  const filterArray = products.filter((num) => {
-    return (num.id = id);
-  });
-  console.log(filterArray);
-  res.send(filterArray);
+  await readProductFile();
+  try {
+    const filterArray = productsArray.filter((product) => product.id == id);
+    res.send(filterArray);
+    res.status(200).json({mensaje: 'Producto eliminado con éxito', productos: productsArray});
+  } catch (error) {
+    res.status(400).json(error);
+  }
 };
 
-const addProduct = (req, res) => {
+const addProduct = async (req, res) => {
   const { body } = req;
-
+  await readProductFile();
   try {
+    // const newProduct = {
+      //   producto: body.producto,
+      //   precio: body.precio,
+      //   stock: body.stock,
+      //   id: productsArray.length + 1,
+      // };
+      let id = productsArray.length === 0 ? 1 : productsArray[productsArray.length - 1].id + 1;
+      productsArray.push({...body, id});
+      await fs.promises.writeFile("src/productos.json", JSON.stringify(productsArray));
+      res.status(200).json({mensaje: 'Producto agregado con éxito', productos: productsArray});
+    // res.send("Producto agregado con éxito", {productos: productsArray});
+  }
+  catch (error) {
+    res.status(400).json(error);
+  }
+
     // if (!body.producto || !body.precio || !body.stock) return res.send('Error, debes ingresar información valida');
 
-    productsArray.length > 0 ? (body.id = productsArray.length + 1): (body.id = 1);
-    productsArray.push(body);
-    console.log(productsArray)
-    res.send(`Se agrego correctamente el producto : ${JSON.parse(body)}`);
-
-    fs.writeFileSync("/src/productos.json", JSON.stringify(productsArray));
-  } catch (error) {
-    res.status(400).send(`Se produjo un error : ${error}`);
-
-  }
 };
 
 const editProduct = (req, res, next) => {
